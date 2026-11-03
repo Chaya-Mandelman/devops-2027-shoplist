@@ -7,16 +7,16 @@ services:
       POSTGRES_PASSWORD: shoppass
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ../../../SQL/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - /SQL/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U shopuser -d shoplist"]
+      test: [ "CMD-SHELL", "pg_isready -U shopuser -d shoplist" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
   backend:
     build:
-      context: ../../../app/frontend
+      context: /app/frontend
       dockerfile: Dockerfile.multistage
     environment:
       DB_HOST: postgres
@@ -29,7 +29,7 @@ services:
 
   stats:
     build:
-      context: ../../../app/stats
+      context: /app/stats
     environment:
       BACKEND_URL: http://backend:5000
     depends_on:
@@ -37,7 +37,8 @@ services:
 
   frontend:
     build:
-      context: ../../../app/frontend
+      context: /app/frontend
+      dockerfile: Dockerfile.multistage
     ports:
       - "8080:80"
     depends_on:
